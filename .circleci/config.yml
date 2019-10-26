@@ -19,6 +19,7 @@ jobs:
       - save_cache:
           paths:
             - .
+            - .git
           key: v2-checkout-{{ .Branch }}
 
   build:
