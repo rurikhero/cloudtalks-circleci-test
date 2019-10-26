@@ -63,7 +63,19 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: yarn test
+      - run: mkdir .tmp && echo "tested" > .tmp/coverage.xml
+      - persist_to_workspace:
+          root: ".tmp/"
+          paths:
+            - coverage.xml
+  code_analysis:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - *restore_repo
+      - attach_workspace:
+          at: .tmp/
+      - run: cat .tmp/coverage.xml
   deploy:
     docker:
       - image: buildpack-deps:trusty
