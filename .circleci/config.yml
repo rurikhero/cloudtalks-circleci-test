@@ -4,6 +4,23 @@
 #
 version: 2
 jobs:
+  checkout_code:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - v1-checkout-{{ .Branch }}
+
+      - checkout
+
+      - save_cache:
+          paths:
+            - .
+          key: v1-checkout-{{ .Branch }}
+
   build:
     docker:
       # specify the version you desire here
@@ -17,12 +34,14 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - v1-checkout-{{ .Branch }}
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-{{ .Branch }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
@@ -32,6 +51,18 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+  testing:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - v1-checkout-{{ .Branch }}
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: yarn test
@@ -39,7 +70,9 @@ jobs:
     docker:
       - image: buildpack-deps:trusty
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - v1-checkout-{{ .Branch }}
       - run:
           name: Deploy Master to Heroku
           command: |
