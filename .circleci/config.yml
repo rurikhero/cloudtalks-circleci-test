@@ -3,26 +3,23 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
-references:
-  restore_repo: &restore_repo
-    restore_cache:
-      keys:
-        - v1-repo-{{ .Branch }}-{{ .Revision }}
-        - v1-repo-{{ .Branch }}
-        - v1-repo
 jobs:
   checkout_code:
     docker:
       # specify the version you desire here
       - image: circleci/node:10
+    working_directory: ~/repo
     steps:
-      - *restore_repo
+      - restore_cache:
+          keys:
+            - v4-checkout-{{ .Branch }}-{{ .Revision }}
+
       - checkout
 
       - save_cache:
           paths:
             - .
-          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          key: v4-checkout-{{ .Branch }}-{{ .Revision }}
 
   build:
     docker:
@@ -34,8 +31,12 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
 
+    working_directory: ~/repo
+
     steps:
-      - *restore_repo
+      - restore_cache:
+          keys:
+            - v4-checkout-{{ .Branch }}-{{ .Revision }}
 
       # Download and cache dependencies
       - restore_cache:
@@ -54,8 +55,11 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:10
+    working_directory: ~/repo
     steps:
-      - *restore_repo
+      - restore_cache:
+          keys:
+            - v4-checkout-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
@@ -66,7 +70,7 @@ jobs:
     docker:
       - image: buildpack-deps:trusty
     steps:
-      - *restore_repo
+      - checkout
       - run:
           name: Deploy Master to Heroku
           command: |
