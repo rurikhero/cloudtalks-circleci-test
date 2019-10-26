@@ -12,15 +12,15 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v3-checkout-{{ .Branch }}
+            - v4-checkout-{{ .Branch }}
 
       - checkout
 
       - save_cache:
           paths:
             - .
-            - .git
-          key: v3-checkout-{{ .Branch }}
+            - ".git"
+          key: v4-checkout-{{ .Branch }}
 
   build:
     docker:
@@ -37,7 +37,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v3-checkout-{{ .Branch }}
+            - v4-checkout-{{ .Branch }}
 
       # Download and cache dependencies
       - restore_cache:
@@ -60,7 +60,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v3-checkout-{{ .Branch }}
+            - v4-checkout-{{ .Branch }}
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
@@ -73,7 +73,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v3-checkout-{{ .Branch }}
+            - v4-checkout-{{ .Branch }}
       - run:
           name: Deploy Master to Heroku
           command: |
