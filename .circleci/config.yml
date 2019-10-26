@@ -3,6 +3,12 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+references:
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v4-checkout-{{ .Branch }}-{{ .Revision }}
+
 jobs:
   checkout_code:
     docker:
@@ -10,12 +16,8 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/repo
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}-{{ .Revision }}
-
+      - *restore_repo
       - checkout
-
       - save_cache:
           paths:
             - .
@@ -34,9 +36,7 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}-{{ .Revision }}
+      - *restore_repo
 
       # Download and cache dependencies
       - restore_cache:
@@ -57,9 +57,7 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/repo
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}-{{ .Revision }}
+      - *restore_repo
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
