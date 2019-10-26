@@ -97,6 +97,9 @@ workflows:
       - testing:
           requires:
             - build
+      - code_analysis:
+          requires:
+            - testing
       - deploy:
           requires:
             - testing
