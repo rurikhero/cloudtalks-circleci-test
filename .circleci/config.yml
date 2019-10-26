@@ -3,6 +3,13 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+references:
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
 jobs:
   checkout_code:
     docker:
@@ -10,17 +17,13 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/repo
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}
-
+      - *restore_repo
       - checkout
 
       - save_cache:
           paths:
             - .
-            - ".git"
-          key: v4-checkout-{{ .Branch }}
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
 
   build:
     docker:
@@ -35,9 +38,7 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}
+      - *restore_repo
 
       # Download and cache dependencies
       - restore_cache:
@@ -58,9 +59,7 @@ jobs:
       - image: circleci/node:10
     working_directory: ~/repo
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}
+      - *restore_repo
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
@@ -71,9 +70,7 @@ jobs:
     docker:
       - image: buildpack-deps:trusty
     steps:
-      - restore_cache:
-          keys:
-            - v4-checkout-{{ .Branch }}
+      - *restore_repo
       - run:
           name: Deploy Master to Heroku
           command: |
