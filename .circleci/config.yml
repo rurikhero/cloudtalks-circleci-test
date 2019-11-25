@@ -108,3 +108,9 @@ workflows:
               only: /^v.*/
             branches:
               ignore: master
+  tagged-build:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
