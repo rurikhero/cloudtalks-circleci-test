@@ -90,10 +90,16 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - checkout_code
+      - checkout_code:
+          filters: # required since `deploy` has tag filters AND requires `build`
+            tags:
+              only: /.*/
       - build:
           requires:
             - checkout_code
+          filters: # required since `deploy` has tag filters AND requires `build`
+            tags:
+              only: /.*/
       - testing:
           requires:
             - build
