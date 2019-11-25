@@ -97,20 +97,15 @@ workflows:
       - testing:
           requires:
             - build
+          filters: # required since `deploy` has tag filters AND requires `build`
+            tags:
+              only: /.*/
       - code_analysis:
           requires:
             - testing
       - deploy:
           requires:
             - testing
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: master
-  tagged-build:
-    jobs:
-      - build:
           filters:
             tags:
               only: /^v.*/
